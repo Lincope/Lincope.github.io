@@ -1,172 +1,103 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>王者荣耀空白名生成器</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .result-box {
-            min-height: 120px;
-            letter-spacing: 0.5em;
-        }
-        .char-display {
-            font-size: 2rem;
-            line-height: 1.5;
-        }
-        .fade-in {
-            animation: fadeIn 0.5s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .code-tag {
-            background-color: #f0f0f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.9rem;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>王者荣耀空白名生成</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-white min-h-screen flex flex-col items-center justify-center p-4">
-    <div class="max-w-2xl w-full bg-white rounded-xl shadow-lg p-8 space-y-6">
-        <div class="flex items-center justify-center space-x-2">
-            <img src="https://game.gtimg.cn/images/yxzj/img201606/heroimg/190/190.jpg" alt="王者荣耀" class="w-12 h-12 rounded-full">
-            <h1 class="text-3xl font-bold text-gray-800 text-center">王者荣耀空白名生成器</h1>
-        </div>
-        
-        <div class="space-y-4">
-            <div>
-                <label for="charCount" class="block text-sm font-medium text-gray-700 mb-1">生成字符数量 (1-6)</label>
-                <div class="flex items-center space-x-2">
-                    <input type="range" id="charCount" min="1" max="6" value="3" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                    <span id="countDisplay" class="text-lg font-medium text-gray-800 w-8 text-center">3</span>
-                </div>
-            </div>
-            
-            <div class="flex space-x-3">
-                <button id="generateBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center justify-center space-x-2">
-                    <i class="fas fa-sync-alt"></i>
-                    <span>重新生成</span>
-                </button>
-                <button id="copyBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center justify-center space-x-2">
-                    <i class="far fa-copy"></i>
-                    <span>复制结果</span>
-                </button>
-            </div>
-        </div>
-        
-        <div class="result-box bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center border border-gray-200">
-            <div id="result" class="char-display text-gray-800 text-center mb-2"></div>
-            <div id="codeInfo" class="text-sm text-gray-600 text-center space-x-1"></div>
-            <p id="placeholder" class="text-gray-400 italic">生成的空白名将显示在这里</p>
-        </div>
-        
-        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
-            <h3 class="font-medium text-blue-800 mb-2">使用说明</h3>
-            <p class="text-sm text-blue-700">
-                这些是Unicode格式的空白字符，可用于王者荣耀创建空白名字。复制后直接在游戏内粘贴使用。
-            </p>
-        </div>
+<body class="bg-gray-100 text-center py-10 px-4">
+  <div class="max-w-xl mx-auto bg-white shadow-lg rounded-2xl p-6">
+    <h1 class="text-2xl font-bold mb-4">王者荣耀空白名生成</h1>
+
+    <div class="mb-4 text-left">
+      <label for="length" class="block font-medium mb-2">字符个数（1~6）：<span id="lengthValue">6</span></label>
+      <input id="length" type="range" min="1" max="6" value="6"
+        class="w-full" oninput="document.getElementById('lengthValue').textContent = this.value; generate();" />
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const charCount = document.getElementById('charCount');
-            const countDisplay = document.getElementById('countDisplay');
-            const generateBtn = document.getElementById('generateBtn');
-            const copyBtn = document.getElementById('copyBtn');
-            const result = document.getElementById('result');
-            const codeInfo = document.getElementById('codeInfo');
-            const placeholder = document.getElementById('placeholder');
-            
-            // Unicode characters to use with their codes
-            const unicodeChars = [
-                { char: '\u2060', code: 'U+2060' },
-                { char: '\u2061', code: 'U+2061' },
-                { char: '\u2062', code: 'U+2062' },
-                { char: '\u2063', code: 'U+2063' },
-                { char: '\u2064', code: 'U+2064' },
-                { char: '\u2066', code: 'U+2066' },
-                { char: '\u2067', code: 'U+2067' },
-                { char: '\u2068', code: 'U+2068' },
-                { char: '\u2069', code: 'U+2069' },
-                { char: '\uFE00', code: 'U+FE00' },
-                { char: '\uFE01', code: 'U+FE01' },
-                { char: '\uFE02', code: 'U+FE02' },
-                { char: '\uFE03', code: 'U+FE03' },
-                { char: '\uFE04', code: 'U+FE04' },
-                { char: '\uFE05', code: 'U+FE05' },
-                { char: '\uFE06', code: 'U+FE06' },
-                { char: '\uFE07', code: 'U+FE07' },
-                { char: '\uFE08', code: 'U+FE08' },
-                { char: '\uFE09', code: 'U+FE09' },
-                { char: '\uFE0A', code: 'U+FE0A' },
-                { char: '\uFE0B', code: 'U+FE0B' },
-                { char: '\uFE0C', code: 'U+FE0C' },
-                { char: '\uFE0D', code: 'U+FE0D' },
-                { char: '\uFE0E', code: 'U+FE0E' }
-            ];
-            
-            // Update count display when slider changes
-            charCount.addEventListener('input', function() {
-                countDisplay.textContent = this.value;
-            });
-            
-            // Generate random characters
-            function generateChars() {
-                const count = parseInt(charCount.value);
-                let output = '';
-                let usedCodes = [];
-                
-                for (let i = 0; i < count; i++) {
-                    const randomIndex = Math.floor(Math.random() * unicodeChars.length);
-                    output += unicodeChars[randomIndex].char;
-                    usedCodes.push(unicodeChars[randomIndex].code);
-                }
-                
-                result.textContent = output;
-                result.classList.add('fade-in');
-                placeholder.style.display = 'none';
-                
-                // Display used Unicode codes
-                codeInfo.innerHTML = '使用的编码: ' + 
-                    usedCodes.map(code => `<span class="code-tag">${code}</span>`).join(' ');
-                
-                // Remove animation class after it completes
-                setTimeout(() => {
-                    result.classList.remove('fade-in');
-                }, 500);
-            }
-            
-            // Copy to clipboard
-            function copyToClipboard() {
-                if (!result.textContent) return;
-                
-                navigator.clipboard.writeText(result.textContent).then(() => {
-                    const originalText = copyBtn.querySelector('span').textContent;
-                    copyBtn.querySelector('span').textContent = '已复制!';
-                    copyBtn.classList.add('bg-green-500');
-                    
-                    setTimeout(() => {
-                        copyBtn.querySelector('span').textContent = originalText;
-                        copyBtn.classList.remove('bg-green-500');
-                    }, 2000);
-                }).catch(err => {
-                    console.error('复制失败: ', err);
-                });
-            }
-            
-            // Event listeners
-            generateBtn.addEventListener('click', generateChars);
-            copyBtn.addEventListener('click', copyToClipboard);
-            
-            // Generate on initial load
-            generateChars();
-        });
-    </script>
+    <div class="mb-4 text-left">
+      <label class="block font-medium mb-1">生成模式：</label>
+      <select id="mode" class="w-full p-2 border rounded" onchange="generate()">
+        <option value="random">全随机生成</option>
+        <option value="repeat">全重复生成</option>
+        <option value="symmetric">对称生成</option>
+      </select>
+    </div>
+
+    <div class="flex gap-2 justify-center mb-4">
+      <button onclick="generate()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
+        重新生成
+      </button>
+      <button onclick="copyResult()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl">
+        复制结果
+      </button>
+    </div>
+
+    <div class="bg-gray-100 p-4 rounded-xl mb-2 border" id="result" style="word-break: break-all;">
+      生成中...
+    </div>
+  </div>
+
+  <script>
+    const invisibleChars = [
+      "\u2060","\u2061","\u2062","\u2063","\u2064",
+      "\u2066","\u2067","\u2068","\u2069",
+      "\uFE00","\uFE01","\uFE02","\uFE03","\uFE04","\uFE05","\uFE06","\uFE07","\uFE08","\uFE09","\uFE0A","\uFE0B","\uFE0C","\uFE0D","\uFE0E"
+    ];
+
+    function getRandomChar() {
+      return invisibleChars[Math.floor(Math.random() * invisibleChars.length)];
+    }
+
+    function generate() {
+      const length = parseInt(document.getElementById("length").value);
+      const mode = document.getElementById("mode").value;
+      let result = [];
+
+      if (mode === "random") {
+        for (let i = 0; i < length; i++) {
+          result.push(getRandomChar());
+        }
+      } else if (mode === "repeat") {
+        const ch = getRandomChar();
+        result = Array(length).fill(ch);
+      } else if (mode === "symmetric") {
+        const half = Math.floor(length / 2);
+        const left = [];
+        for (let i = 0; i < half; i++) {
+          left.push(getRandomChar());
+        }
+
+        let middle = [];
+        if (length % 2 === 1) {
+          middle = [getRandomChar()];
+        }
+
+        const right = [...left].reverse();
+        result = [...left, ...middle, ...right];
+      }
+
+      // 显示结果字符和编码
+      const resultContainer = document.getElementById("result");
+      resultContainer.innerHTML = result.map((ch) => `
+        <div class="inline-block mx-1 text-center">
+          <span class="block text-2xl">${ch}</span>
+          <span class="text-xs text-gray-500">U+${ch.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}</span>
+        </div>
+      `).join("");
+    }
+
+    function copyResult() {
+      const resultDiv = document.getElementById("result");
+      const chars = Array.from(resultDiv.querySelectorAll("span.text-2xl")).map(span => span.textContent).join("");
+      navigator.clipboard.writeText(chars).then(() => {
+        alert("已复制到剪贴板！");
+      });
+    }
+
+    // 页面加载完成后默认生成一次
+    window.onload = generate;
+  </script>
 </body>
 </html>
