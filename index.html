@@ -91,9 +91,7 @@
     function copyResult() {
       const resultDiv = document.getElementById("result");
       const chars = Array.from(resultDiv.querySelectorAll("span.text-2xl")).map(span => span.textContent).join("");
-      navigator.clipboard.writeText(chars).then(() => {
-        alert("已复制到剪贴板！");
-      });
+      navigator.clipboard.writeText(chars);
     }
 
     // 页面加载完成后默认生成一次
