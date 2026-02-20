@@ -3,99 +3,133 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>王者荣耀空白名生成</title>
+  <title>王者荣耀空白名生成（分组版）</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-center py-10 px-4">
-  <div class="max-w-xl mx-auto bg-white shadow-lg rounded-2xl p-6">
-    <h1 class="text-2xl font-bold mb-4">王者荣耀空白名生成</h1>
+  <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-2xl p-6">
+    <h1 class="text-2xl font-bold mb-6">王者荣耀空白名生成（分组版）</h1>
 
-    <div class="mb-4 text-left">
-      <label for="length" class="block font-medium mb-2">字符个数（1~6）：<span id="lengthValue">6</span></label>
+    <!-- 公共设置 -->
+    <div class="mb-6 text-left">
+      <label class="block font-medium mb-2">
+        字符个数（1~6）：<span id="lengthValue">6</span>
+      </label>
       <input id="length" type="range" min="1" max="6" value="6"
-        class="w-full" oninput="document.getElementById('lengthValue').textContent = this.value; generate();" />
+        class="w-full"
+        oninput="document.getElementById('lengthValue').textContent = this.value;" />
     </div>
 
-    <div class="mb-4 text-left">
-      <label class="block font-medium mb-1">生成模式：</label>
-      <select id="mode" class="w-full p-2 border rounded" onchange="generate()">
-        <option value="random">全随机生成</option>
-        <option value="repeat">全重复生成</option>
+    <div class="mb-6 text-left">
+      <label class="block font-medium mb-2">生成模式：</label>
+      <select id="mode" class="w-full p-2 border rounded">
+        <option value="random">全随机</option>
+        <option value="repeat">全重复</option>
         <option value="symmetric">对称生成</option>
       </select>
     </div>
 
-    <div class="flex gap-2 justify-center mb-4">
-      <button onclick="generate()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl">
-        重新生成
+    <div class="flex gap-2 justify-center mb-8">
+      <button onclick="generateAll()" class="bg-blue-600 text-white px-4 py-2 rounded-xl">
+        生成
       </button>
-      <button onclick="copyResult()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl">
-        复制结果
+      <button onclick="copyAll()" class="bg-green-600 text-white px-4 py-2 rounded-xl">
+        复制全部
       </button>
     </div>
 
-    <div class="bg-gray-100 p-4 rounded-xl mb-2 border" id="result" style="word-break: break-all;">
-      生成中...
-    </div>
+    <!-- 第一组 -->
+    <h2 class="text-lg font-semibold mb-2">有距离字符组（U+2060 ~ U+2069）</h2>
+    <div id="groupA" class="bg-gray-100 p-4 rounded-xl mb-6 border"></div>
+
+    <!-- 第二组 -->
+    <h2 class="text-lg font-semibold mb-2">不可见字符组（U+FE00 ~ U+FE0E）</h2>
+    <div id="groupB" class="bg-gray-100 p-4 rounded-xl border"></div>
   </div>
 
-  <script>
-    const invisibleChars = [
-      "\u2060","\u2061","\u2062","\u2063","\u2064",
-      "\u2066","\u2067","\u2068","\u2069",
-      "\uFE00","\uFE01","\uFE02","\uFE03","\uFE04","\uFE05","\uFE06","\uFE07","\uFE08","\uFE09","\uFE0A","\uFE0B","\uFE0C","\uFE0D","\uFE0E"
-    ];
+<script>
+  // 前9个
+  const spacedChars = [
+    "\u2060","\u2061","\u2062","\u2063","\u2064",
+    "\u2066","\u2067","\u2068","\u2069"
+  ];
 
-    function getRandomChar() {
-      return invisibleChars[Math.floor(Math.random() * invisibleChars.length)];
-    }
+  // 后15个
+  const invisibleChars = [
+    "\uFE00","\uFE01","\uFE02","\uFE03","\uFE04",
+    "\uFE05","\uFE06","\uFE07","\uFE08","\uFE09",
+    "\uFE0A","\uFE0B","\uFE0C","\uFE0D","\uFE0E"
+  ];
 
-    function generate() {
-      const length = parseInt(document.getElementById("length").value);
-      const mode = document.getElementById("mode").value;
-      let result = [];
+  function getRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
 
-      if (mode === "random") {
-        for (let i = 0; i < length; i++) {
-          result.push(getRandomChar());
-        }
-      } else if (mode === "repeat") {
-        const ch = getRandomChar();
-        result = Array(length).fill(ch);
-      } else if (mode === "symmetric") {
-        const half = Math.floor(length / 2);
-        const left = [];
-        for (let i = 0; i < half; i++) {
-          left.push(getRandomChar());
-        }
+  function generateGroup(sourceArr, length, mode) {
+    let result = [];
 
-        let middle = [];
-        if (length % 2 === 1) {
-          middle = [getRandomChar()];
-        }
-
-        const right = [...left].reverse();
-        result = [...left, ...middle, ...right];
+    if (mode === "random") {
+      for (let i = 0; i < length; i++) {
+        result.push(getRandom(sourceArr));
+      }
+    } 
+    else if (mode === "repeat") {
+      const ch = getRandom(sourceArr);
+      result = Array(length).fill(ch);
+    } 
+    else if (mode === "symmetric") {
+      const half = Math.floor(length / 2);
+      const left = [];
+      for (let i = 0; i < half; i++) {
+        left.push(getRandom(sourceArr));
       }
 
-      // 显示结果字符和编码
-      const resultContainer = document.getElementById("result");
-      resultContainer.innerHTML = result.map((ch) => `
-        <div class="inline-block mx-1 text-center">
-          <span class="block text-2xl">${ch}</span>
-          <span class="text-xs text-gray-500">U+${ch.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}</span>
-        </div>
-      `).join("");
+      let middle = [];
+      if (length % 2 === 1) {
+        middle = [getRandom(sourceArr)];
+      }
+
+      const right = [...left].reverse();
+      result = [...left, ...middle, ...right];
     }
 
-    function copyResult() {
-      const resultDiv = document.getElementById("result");
-      const chars = Array.from(resultDiv.querySelectorAll("span.text-2xl")).map(span => span.textContent).join("");
-      navigator.clipboard.writeText(chars);
-    }
+    return result;
+  }
 
-    // 页面加载完成后默认生成一次
-    window.onload = generate;
-  </script>
+  function render(containerId, chars) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = chars.map(ch => `
+      <div class="inline-block mx-1 text-center">
+        <span class="block text-2xl">${ch}</span>
+        <span class="text-xs text-gray-500">
+          U+${ch.codePointAt(0).toString(16).toUpperCase().padStart(4,'0')}
+        </span>
+      </div>
+    `).join("");
+  }
+
+  function generateAll() {
+    const length = parseInt(document.getElementById("length").value);
+    const mode = document.getElementById("mode").value;
+
+    const groupAResult = generateGroup(spacedChars, length, mode);
+    const groupBResult = generateGroup(invisibleChars, length, mode);
+
+    render("groupA", groupAResult);
+    render("groupB", groupBResult);
+  }
+
+  function copyAll() {
+    const groupA = Array.from(document.querySelectorAll("#groupA span.text-2xl"))
+      .map(s => s.textContent).join("");
+
+    const groupB = Array.from(document.querySelectorAll("#groupB span.text-2xl"))
+      .map(s => s.textContent).join("");
+
+    navigator.clipboard.writeText(groupA + groupB);
+  }
+
+  window.onload = generateAll;
+</script>
 </body>
 </html>
